@@ -36,7 +36,7 @@ const Market = (props) => {
         setAddress(address);
       });
     }
-  }, [wallet]);
+  }, [arweave.wallets, wallet]);
 
   return (
     <div className='market'>
