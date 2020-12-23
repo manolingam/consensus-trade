@@ -1,0 +1,144 @@
+@import './utils/constants.scss';
+
+.app {
+  width: 100vw;
+  font-family: $primary-font;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+i {
+  line-height: auto;
+  font-size: 2rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  margin: 1rem;
+}
+
+#address {
+  position: fixed;
+  right: 0;
+  top: 0;
+  margin: 1rem;
+}
+
+.home {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: $background-color;
+    margin: 3rem 0;
+  }
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  .markets-container {
+    width: 80%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 15px;
+    font-size: 1rem;
+    padding: 2rem;
+    cursor: pointer;
+  }
+  .markets-snap-container {
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: $font-color;
+    border: 3px solid $font-color;
+    margin: 10px 0;
+    padding: 0.5rem;
+    h4 {
+      margin-left: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+  }
+  .markets-snap-container:hover {
+    border-color: $background-color;
+  }
+}
+
+.market {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .chakra-avatar {
+    margin-top: 50px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 15px;
+  }
+  #description {
+    margin-top: 25px;
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+  .stat-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 25px;
+    div {
+      width: 250px;
+      background-color: $font-color;
+      padding: 5px;
+      text-align: center;
+      span {
+        font-size: 0.8rem;
+      }
+      p {
+        font-weight: bold;
+      }
+    }
+  }
+  .vote-container {
+    height: 300px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 25px;
+    img {
+      width: 25px;
+    }
+    label {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+    }
+    button {
+      width: 100px;
+      margin-bottom: 25px;
+    }
+    input,
+    button {
+      background-color: $background-color;
+      border: 3px solid $background-color;
+      font-size: 1rem;
+      padding: 1rem;
+      color: $font-color;
+    }
+    input:hover,
+    button:hover {
+      background-color: $font-color;
+      color: $background-color;
+    }
+  }
+}
