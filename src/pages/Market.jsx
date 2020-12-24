@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Avatar } from '@chakra-ui/react';
 
-import useArweave from '../../hooks/useArweave';
+import useArweave from '../hooks/useArweave';
 
 const Market = (props) => {
   const [wallet, setWallet] = useState(null);

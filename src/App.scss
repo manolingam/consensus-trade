@@ -25,31 +25,56 @@ i {
   margin: 1rem;
 }
 
+.front-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  .fa-users {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .fa-users:hover {
+    opacity: 0.5;
+  }
+  p {
+    width: 70%;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+  #logo {
+    margin: 3rem 0;
+  }
+  h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: $background-color;
+    margin-bottom: 25px;
+  }
+}
+
 .home {
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  h1 {
-    font-size: 3rem;
-    font-weight: bold;
-    color: $background-color;
-    margin: 3rem 0;
-  }
   h3 {
     font-size: 1.5rem;
-    margin-bottom: 10px;
+    margin-right: auto;
+    margin-left: 2rem;
+    margin-top: 3rem;
   }
   .markets-container {
-    width: 80%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 15px;
     font-size: 1rem;
     padding: 2rem;
-    cursor: pointer;
   }
-  .markets-snap-container {
+  .market-card {
     height: 200px;
     display: flex;
     flex-direction: column;
@@ -59,13 +84,18 @@ i {
     border: 3px solid $font-color;
     margin: 10px 0;
     padding: 0.5rem;
+    cursor: pointer;
     h4 {
       margin-left: 10px;
       font-size: 1.1rem;
       font-weight: bold;
     }
+    #date {
+      margin-left: auto;
+      font-size: 0.7rem;
+    }
   }
-  .markets-snap-container:hover {
+  .market-card:hover {
     border-color: $background-color;
   }
 }

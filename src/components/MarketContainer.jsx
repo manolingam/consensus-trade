@@ -1,15 +1,11 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
-import MarketSnap from '../../components/MarketSnap';
+import MarketCard from './MarketCard.jsx';
 
-const { MARKETS } = require('../../utils/constants');
-
-const Home = () => {
+const MarketContainer = ({ category, MARKETS }) => {
   return (
-    <div className='home'>
-      <h1>Consensus Trade</h1>
-      <h3>All Markets</h3>
+    <>
+      <h3>{category}</h3>
       <div className='markets-container'>
         {MARKETS.map((market) => {
           return (
@@ -17,13 +13,13 @@ const Home = () => {
               key={market.id}
               to={{ pathname: `/market/${market.id}`, data: market }}
             >
-              <MarketSnap data={market} />
+              <MarketCard data={market} />
             </Link>
           );
         })}
       </div>
-    </div>
+    </>
   );
 };
 
-export default Home;
+export default MarketContainer;
