@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
-import Home from './pages/home/Home';
-import Market from './pages/market/Market';
+import Home from './pages/Home';
+import Market from './pages/Market';
 
 import './App.scss';
 

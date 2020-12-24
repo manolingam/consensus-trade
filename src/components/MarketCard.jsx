@@ -1,9 +1,9 @@
 import React from 'react';
 import { Avatar } from '@chakra-ui/react';
 
-const MarketSnap = ({ data }) => {
+const MarketCard = ({ data }) => {
   return (
-    <div className='markets-snap-container'>
+    <div className='market-card'>
       <div
         style={{
           width: '100%',
@@ -22,11 +22,9 @@ const MarketSnap = ({ data }) => {
         <h4>{data.title}</h4>
       </div>
       <p>{data.body}</p>
-      {/* <div>
-        <i className='fas fa-chevron-right'></i>
-      </div> */}
+      <span id='date'>{new Date().toDateString()}</span>
     </div>
   );
 };
 
-export default MarketSnap;
+export default MarketCard;
