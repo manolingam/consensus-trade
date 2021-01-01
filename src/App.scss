@@ -62,12 +62,13 @@ i {
   flex-direction: column;
   align-items: center;
   h3 {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-right: auto;
     margin-left: 2rem;
     margin-top: 3rem;
   }
   .markets-container {
+    width: 85%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 15px;
@@ -87,8 +88,11 @@ i {
     cursor: pointer;
     h4 {
       margin-left: 10px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
+    }
+    p {
+      font-size: 0.8rem;
     }
     #date {
       margin-left: auto;
@@ -110,13 +114,13 @@ i {
     margin-top: 50px;
   }
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     margin-top: 15px;
   }
   #description {
     margin-top: 25px;
-    font-size: 1rem;
+    font-size: 0.8rem;
     padding: 0.5rem;
   }
   .stat-container {
@@ -126,15 +130,16 @@ i {
     justify-content: space-evenly;
     margin-top: 25px;
     div {
-      width: 250px;
+      width: 150px;
       background-color: $font-color;
-      padding: 5px;
+      padding: 3px;
       text-align: center;
       span {
-        font-size: 0.8rem;
+        font-size: 0.6rem;
       }
       p {
         font-weight: bold;
+        font-size: 0.8rem;
       }
     }
   }
@@ -150,7 +155,7 @@ i {
       width: 25px;
     }
     label {
-      font-size: 1.3rem;
+      font-size: 0.8rem;
       margin-bottom: 15px;
     }
     button {
@@ -161,8 +166,8 @@ i {
     button {
       background-color: $background-color;
       border: 3px solid $background-color;
-      font-size: 1rem;
-      padding: 1rem;
+      font-size: 0.8rem;
+      padding: 0.8rem;
       color: $font-color;
     }
     input:hover,
@@ -170,5 +175,16 @@ i {
       background-color: $font-color;
       color: $background-color;
     }
+  }
+  .grid-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 25px;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+  #chart-container {
+    height: 350px;
   }
 }
