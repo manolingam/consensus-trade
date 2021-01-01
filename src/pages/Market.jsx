@@ -43,7 +43,7 @@ const Market = (props) => {
 
   useEffect(() => {
     var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
+    new Chart(ctx, {
       type: 'line',
       data: {
         labels: ['20 Dec', '21 Dec', '22 Dec', '23 Dec', '24 Dec', '25 Dec'],
