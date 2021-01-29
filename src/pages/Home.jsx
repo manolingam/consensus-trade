@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import MarketContainer from '../components/MarketContainer';
 
+import useContract from '../hooks/useContract';
+
 import Logo from '../assets/logo.png';
 
-const { MARKETS } = require('../utils/constants');
-
 const Home = () => {
+  const [contractState, setContractState] = useState('');
+
+  const { getContractState } = useContract();
+
+  const fetchContractState = async () => {
+    const newContractState = await getContractState();
+    setContractState(newContractState);
+    console.log(contractState);
+  };
+
+  useEffect(() => {
+    fetchContractState();
+  }, []);
+
   return (
     <div className='home'>
       <div className='front-page'>
@@ -27,9 +41,27 @@ const Home = () => {
           </p>
         </>
       </div>
-      <MarketContainer category='Recent Markets' MARKETS={MARKETS} />
-      <MarketContainer category='Active Markets' MARKETS={MARKETS} />
-      <MarketContainer category='Concluded Markets' MARKETS={MARKETS} />
+
+      {contractState
+        ? contractState.votes.map((market, index) => {
+            return (
+              <MarketContainer
+                key={index}
+                category={
+                  market.status === 'active'
+                    ? 'Active'
+                    : market.status === 'passed'
+                    ? 'Passed'
+                    : 'Failed'
+                }
+                market={market}
+                index={index}
+              />
+            );
+          })
+        : null}
+
+      {contractState ? console.log(contractState) : null}
     </div>
   );
 };

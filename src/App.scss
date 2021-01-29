@@ -9,14 +9,14 @@
   justify-content: center;
 }
 
-i {
-  line-height: auto;
-  font-size: 2rem;
-  position: fixed;
-  left: 0;
-  top: 0;
-  margin: 1rem;
-}
+// i {
+//   line-height: auto;
+//   font-size: 2rem;
+//   position: fixed;
+//   left: 0;
+//   top: 0;
+//   margin: 1rem;
+// }
 
 #address {
   position: fixed;
@@ -35,7 +35,9 @@ i {
   .fa-users {
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
+    margin: 1rem;
+    font-size: 2rem;
   }
   .fa-users:hover {
     opacity: 0.5;
@@ -66,6 +68,9 @@ i {
     margin-right: auto;
     margin-left: 2rem;
     margin-top: 3rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1.2px;
   }
   .markets-container {
     width: 85%;
@@ -76,15 +81,13 @@ i {
     padding: 2rem;
   }
   .market-card {
-    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    align-items: center;
     background-color: $font-color;
     border: 3px solid $font-color;
     margin: 10px 0;
-    padding: 0.5rem;
+    padding: 18px;
     cursor: pointer;
     h4 {
       margin-left: 10px;
@@ -94,9 +97,33 @@ i {
     p {
       font-size: 0.8rem;
     }
+    #note {
+      font-size: 1.1rem;
+      margin: 10px 0 10px 0;
+      text-decoration: underline;
+    }
     #date {
       margin-left: auto;
       font-size: 0.7rem;
+    }
+    .body-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin: 10px 0 10px 0;
+      .weights-container {
+        span {
+          font-size: 0.7rem;
+        }
+        p {
+          font-size: 1.1rem;
+        }
+      }
+      .votes-container {
+        p {
+          font-size: 1.1rem;
+        }
+      }
     }
   }
   .market-card:hover {
@@ -105,86 +132,106 @@ i {
 }
 
 .market {
-  width: 80%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  .chakra-avatar {
-    margin-top: 50px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+
+  .fa-arrow-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 1rem;
+    font-size: 1.5rem;
   }
-  h1 {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-top: 15px;
+  .fa-arrow-left:hover {
+    opacity: 0.5;
   }
-  #description {
-    margin-top: 25px;
-    font-size: 0.8rem;
-    padding: 0.5rem;
-  }
-  .stat-container {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    margin-top: 25px;
-    div {
-      width: 150px;
-      background-color: $font-color;
-      padding: 3px;
-      text-align: center;
-      span {
-        font-size: 0.6rem;
-      }
-      p {
-        font-weight: bold;
-        font-size: 0.8rem;
-      }
-    }
-  }
-  .vote-container {
-    height: 300px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 25px;
-    img {
-      width: 25px;
-    }
-    label {
-      font-size: 0.8rem;
-      margin-bottom: 15px;
-    }
-    button {
-      width: 100px;
-      margin-bottom: 25px;
-    }
-    input,
-    button {
-      background-color: $background-color;
-      border: 3px solid $background-color;
-      font-size: 0.8rem;
-      padding: 0.8rem;
-      color: $font-color;
-    }
-    input:hover,
-    button:hover {
-      background-color: $font-color;
-      color: $background-color;
-    }
-  }
+
   .grid-container {
-    width: 100%;
+    width: 70%;
+    height: 400px;
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-gap: 25px;
-    margin-top: 3rem;
-    margin-bottom: 3rem;
-  }
-  #chart-container {
-    height: 350px;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 200px;
+
+    .left-container,
+    .right-container {
+      display: grid;
+      place-items: center;
+    }
+
+    .left-container {
+      background-color: $background-color;
+      .info-container {
+        display: grid;
+        place-items: center;
+        h1 {
+          font-size: 1.2rem;
+          font-weight: bold;
+          margin-top: 15px;
+          color: $font-color;
+        }
+        #description {
+          font-size: 0.8rem;
+          padding: 0.5rem;
+          color: $font-color;
+        }
+      }
+      .stat-container {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 25px;
+        div {
+          width: 200px;
+          background-color: $font-color;
+          padding: 3px;
+          text-align: center;
+          margin: 10px 10px 0 10px;
+          span {
+            font-size: 0.8rem;
+          }
+          p {
+            font-weight: bold;
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+
+    .right-container {
+      .vote-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 25px;
+        img {
+          width: 25px;
+        }
+        label {
+          font-size: 0.8rem;
+          margin-bottom: 15px;
+        }
+        button {
+          width: 100px;
+        }
+        input,
+        button {
+          background-color: $background-color;
+          border: 3px solid $background-color;
+          font-size: 0.8rem;
+          padding: 0.8rem;
+          color: $font-color;
+        }
+        input:hover,
+        button:hover {
+          background-color: $font-color;
+          color: $background-color;
+        }
+      }
+    }
   }
 }
