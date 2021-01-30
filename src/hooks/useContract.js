@@ -2,7 +2,7 @@ import { interactWrite, readContract } from 'smartweave';
 
 import useArweave from './useArweave';
 
-const CONTRACT_ADDRESS = '1kKyFOGOW8db1ahA8FVLOE29praXGXwXgRqcXQR_aUg';
+const CONTRACT_ADDRESS = 'iEPkBNzZTNXSsEJUKL-RH5N1IkEf83EGWG2-L3kSa3s';
 
 export default function useContracts(wallet) {
   const arweave = useArweave();
@@ -30,27 +30,6 @@ export default function useContracts(wallet) {
     return txId;
   };
 
-  const onCreateMarket = async (
-    type,
-    note,
-    tweetUsername,
-    tweetPhoto,
-    tweetCreated,
-    tweetLink
-  ) => {
-    console.log('creating market');
-    const txId = await interactWrite(arweave, wallet, CONTRACT_ADDRESS, {
-      function: 'propose',
-      type,
-      note,
-      tweetUsername,
-      tweetPhoto,
-      tweetCreated,
-      tweetLink
-    });
-    return txId;
-  };
-
   const onVote = async (id, cast) => {
     const txId = await interactWrite(arweave, wallet, CONTRACT_ADDRESS, {
       function: 'vote',
@@ -60,5 +39,15 @@ export default function useContracts(wallet) {
     return txId;
   };
 
-  return { getContractState, onTransfer, onLock, onCreateMarket, onVote };
+  const onStake = async (id, cast, stakedAmount) => {
+    const txId = await interactWrite(arweave, wallet, CONTRACT_ADDRESS, {
+      function: 'stake',
+      id,
+      cast,
+      stakedAmount
+    });
+    return txId;
+  };
+
+  return { getContractState, onTransfer, onLock, onStake, onVote };
 }

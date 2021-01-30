@@ -8,14 +8,42 @@ import Logo from '../assets/logo.png';
 
 const Home = () => {
   const [contractState, setContractState] = useState('');
+  const [activeMarkets, setActiveMarkets] = useState('');
+  const [passedMarkets, setPassedMarkets] = useState('');
+  const [failedMarkets, setFailedMarkets] = useState('');
 
   const { getContractState } = useContract();
 
   const fetchContractState = async () => {
     const newContractState = await getContractState();
     setContractState(newContractState);
-    console.log(contractState);
   };
+
+  useEffect(() => {
+    let active_markets = [];
+    let passed_markets = [];
+    let failed_markets = [];
+
+    if (contractState) {
+      for (var key in contractState.markets) {
+        if (contractState.markets[key].status === 'active') {
+          active_markets.push(contractState.markets[key]);
+        }
+
+        if (contractState.markets[key].status === 'passed') {
+          passed_markets.push(contractState.markets[key]);
+        }
+
+        if (contractState.markets[key].status === 'failed') {
+          failed_markets.push(contractState.markets[key]);
+        }
+      }
+    }
+
+    setActiveMarkets(active_markets);
+    setPassedMarkets(passed_markets);
+    setFailedMarkets(failed_markets);
+  }, [contractState]);
 
   useEffect(() => {
     fetchContractState();
@@ -42,26 +70,15 @@ const Home = () => {
         </>
       </div>
 
-      {contractState
-        ? contractState.votes.map((market, index) => {
-            return (
-              <MarketContainer
-                key={index}
-                category={
-                  market.status === 'active'
-                    ? 'Active'
-                    : market.status === 'passed'
-                    ? 'Passed'
-                    : 'Failed'
-                }
-                market={market}
-                index={index}
-              />
-            );
-          })
-        : null}
-
-      {contractState ? console.log(contractState) : null}
+      {activeMarkets && (
+        <MarketContainer category='Active' markets={activeMarkets} />
+      )}
+      {passedMarkets && (
+        <MarketContainer category='Passed' markets={passedMarkets} />
+      )}
+      {failedMarkets && (
+        <MarketContainer category='Failed' markets={failedMarkets} />
+      )}
     </div>
   );
 };

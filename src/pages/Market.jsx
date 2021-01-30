@@ -1,39 +1,43 @@
 import { useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Avatar } from '@chakra-ui/react';
+import {
+  Avatar,
+  Modal,
+  ModalOverlay,
+  ModalHeader,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  Button
+} from '@chakra-ui/react';
+
 import Chart from 'chart.js';
 
 import useArweave from '../hooks/useArweave';
 import useContract from '../hooks/useContract';
 
-var config = {
-  type: 'pie',
-  data: {
-    datasets: [
-      {
-        data: [10, 6],
-        backgroundColor: ['#444554', '#cfcfea'],
-        label: 'Votes'
-      }
-    ],
-    labels: ['Yay', 'Nay']
-  },
-  options: {
-    responsive: true
-  }
-};
-
 Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
+const LOCK_LENGTH = 2160;
+
 const Market = (props) => {
+  const [modalStatus, setModalStatus] = useState(false);
+
   const [wallet, setWallet] = useState(null);
   const [address, setAddress] = useState(null);
   const [loginError, setLoginError] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [stakedStatus, setStakedStatus] = useState(false);
+  const [txId, setTxId] = useState('');
+
+  const [stakedAmount, setStakedAmount] = useState('');
+  const [lockQty, setLockQty] = useState(0);
+
   const arweave = useArweave();
 
-  const { onTransfer, onLock, onVote } = useContract(wallet);
+  const { onLock, onStake } = useContract(wallet);
 
   const uploadWallet = async (e) => {
     setLoading(true);
@@ -41,7 +45,7 @@ const Market = (props) => {
     fileReader.onload = async (e) => {
       try {
         setWallet(JSON.parse(e.target.result));
-        console.log(wallet);
+        // console.log(wallet);
       } catch (err) {
         setLoginError(true);
         console.error('Invalid wallet was uploaded.', err);
@@ -53,18 +57,62 @@ const Market = (props) => {
     setLoading(false);
   };
 
+  const onLockTokens = async () => {
+    if (lockQty > 0) {
+      const trasactionId = await onLock(lockQty, LOCK_LENGTH);
+      setTxId(trasactionId);
+      setModalStatus(true);
+      console.log(trasactionId);
+    } else {
+      setTxId('Invalid Inputs');
+    }
+  };
+
+  const onMarketStake = async (id, cast, stakedAmount) => {
+    const trasactionId = await onStake(id, cast, stakedAmount);
+    setTxId(trasactionId);
+    console.log(trasactionId);
+  };
+
   useEffect(() => {
     if (wallet) {
       arweave.wallets.jwkToAddress(wallet).then((address) => {
         setAddress(address);
+
+        let staked_list = props.location.data.staked;
+        // eslint-disable-next-line array-callback-return
+        staked_list.map((item) => {
+          if (item.address === address) {
+            setStakedStatus(true);
+            setStakedAmount(item.amount);
+            return true;
+          }
+        });
       });
     }
-    console.log(props);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arweave.wallets, wallet]);
 
   useEffect(() => {
+    var config = {
+      type: 'pie',
+      data: {
+        datasets: [
+          {
+            data: [props.location.data.yays, props.location.data.nays],
+            backgroundColor: ['#444554', '#cfcfea'],
+            label: 'Votes'
+          }
+        ],
+        labels: ['Yays', 'Nays']
+      },
+      options: {
+        responsive: true
+      }
+    };
     var ctx = document.getElementById('myChart').getContext('2d');
     new Chart(ctx, config);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -76,6 +124,7 @@ const Market = (props) => {
       <p id='address'>{address}</p>
 
       <div className='grid-container'>
+        <div></div>
         <div className='left-container'>
           <div className='info-container'>
             <Avatar
@@ -84,17 +133,17 @@ const Market = (props) => {
               src={props.location.data.tweetPhoto}
             />
             <h1>{props.location.data.tweetUsername}</h1>
-            <p id='description'>{props.location.data.note}</p>
+            <p id='description'>{props.location.data.tweet}</p>
           </div>
 
           <div className='stat-container'>
             <div>
-              <span>Market ends on</span>
-              <p>{new Date().toDateString()}</p>
+              <span>Market created on</span>
+              <p>{new Date(props.location.data.tweetCreated).toDateString()}</p>
             </div>
             <div>
-              <span>Total Weight</span>
-              <p>{props.location.data.totalWeight}</p>
+              <span>Market ends on</span>
+              <p>{new Date().toDateString()}</p>
             </div>
           </div>
         </div>
@@ -123,15 +172,79 @@ const Market = (props) => {
 
             {loginError && <p>Invalid Wallet</p>}
 
-            {wallet && (
+            {wallet && stakedStatus && (
               <div className='vote-buttons'>
-                <button style={{ marginRight: '15px' }}>Yes</button>
-                <button>No</button>
+                <button
+                  style={{ marginRight: '15px' }}
+                  onClick={() =>
+                    onMarketStake(
+                      props.location.data.marketId,
+                      'yay',
+                      stakedAmount
+                    )
+                  }
+                >
+                  Yay
+                </button>
+                <button
+                  onClick={() =>
+                    onMarketStake(
+                      props.location.data.marketId,
+                      'nay',
+                      stakedAmount
+                    )
+                  }
+                >
+                  Nay
+                </button>
+              </div>
+            )}
+
+            {wallet && !stakedStatus && (
+              <div className='stake-container'>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span>Amount to Stake</span>
+                  <input
+                    type='number'
+                    onChange={(e) => setLockQty(e.target.value)}
+                  />
+                </div>
+                <button onClick={onLockTokens}>Stake</button>
               </div>
             )}
           </div>
         </div>
+        <div></div>
       </div>
+
+      <Modal
+        onClose={() => setModalStatus(false)}
+        isOpen={modalStatus}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Transaction Submitted!</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <p>
+              It takes variable time to update the state. By the time, you can
+              check yout transaction status{' '}
+              <a
+                id='transaction-id'
+                href={`https://viewblock.io/arweave/address/${txId}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                here.
+              </a>
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => setModalStatus(false)}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };
