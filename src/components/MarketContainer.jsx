@@ -12,7 +12,7 @@ const MarketContainer = ({ category, markets }) => {
             return (
               <Link
                 key={index}
-                to={{ pathname: `/market/${index}`, data: market }}
+                to={{ pathname: `/market/${market.marketId}`, data: market }}
               >
                 <MarketCard data={market} />
               </Link>
