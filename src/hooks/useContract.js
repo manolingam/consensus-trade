@@ -12,33 +12,6 @@ export default function useContracts(wallet) {
     return contractState;
   };
 
-  const onTransfer = async (target, qty) => {
-    const txId = await interactWrite(arweave, wallet, CONTRACT_ADDRESS, {
-      function: 'transfer',
-      target,
-      qty
-    });
-    return txId;
-  };
-
-  const onLock = async (qty, lockLength) => {
-    const txId = await interactWrite(arweave, wallet, CONTRACT_ADDRESS, {
-      function: 'lock',
-      qty,
-      lockLength
-    });
-    return txId;
-  };
-
-  const onVote = async (id, cast) => {
-    const txId = await interactWrite(arweave, wallet, CONTRACT_ADDRESS, {
-      function: 'vote',
-      id,
-      cast
-    });
-    return txId;
-  };
-
   const onStake = async (id, cast, stakedAmount) => {
     const txId = await interactWrite(arweave, wallet, CONTRACT_ADDRESS, {
       function: 'stake',
@@ -49,5 +22,5 @@ export default function useContracts(wallet) {
     return txId;
   };
 
-  return { getContractState, onTransfer, onLock, onStake, onVote };
+  return { getContractState, onStake };
 }

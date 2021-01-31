@@ -229,15 +229,13 @@
         }
       }
 
-      .stake-container {
+      .input-container {
+        width: 100%;
         display: flex;
-        flex-direction: row;
-        align-items: flex-end;
+        flex-direction: column;
+        margin-bottom: 15px;
         input {
           background-color: $font-color;
-        }
-        button {
-          margin-left: 10px;
         }
       }
     }

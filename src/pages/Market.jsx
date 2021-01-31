@@ -19,7 +19,7 @@ import useContract from '../hooks/useContract';
 
 Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
-const LOCK_LENGTH = 2160;
+// const LOCK_LENGTH = 2160;
 
 const Market = (props) => {
   const [modalStatus, setModalStatus] = useState(false);
@@ -29,15 +29,13 @@ const Market = (props) => {
   const [loginError, setLoginError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [stakedStatus, setStakedStatus] = useState(false);
   const [txId, setTxId] = useState('');
 
-  const [stakedAmount, setStakedAmount] = useState('');
-  const [lockQty, setLockQty] = useState(0);
+  const [stakeQty, setStakeQty] = useState(0);
 
   const arweave = useArweave();
 
-  const { onLock, onStake } = useContract(wallet);
+  const { onStake } = useContract(wallet);
 
   const uploadWallet = async (e) => {
     setLoading(true);
@@ -57,37 +55,22 @@ const Market = (props) => {
     setLoading(false);
   };
 
-  const onLockTokens = async () => {
-    if (lockQty > 0) {
-      const trasactionId = await onLock(lockQty, LOCK_LENGTH);
+  const onMarketStake = async (id, cast, stakedAmount) => {
+    if (stakedAmount > 0) {
+      const trasactionId = await onStake(id, cast, stakedAmount);
       setTxId(trasactionId);
       setModalStatus(true);
       console.log(trasactionId);
     } else {
       setTxId('Invalid Inputs');
+      alert('Stake cannot be zero!');
     }
-  };
-
-  const onMarketStake = async (id, cast, stakedAmount) => {
-    const trasactionId = await onStake(id, cast, stakedAmount);
-    setTxId(trasactionId);
-    console.log(trasactionId);
   };
 
   useEffect(() => {
     if (wallet) {
       arweave.wallets.jwkToAddress(wallet).then((address) => {
         setAddress(address);
-
-        let staked_list = props.location.data.staked;
-        // eslint-disable-next-line array-callback-return
-        staked_list.map((item) => {
-          if (item.address === address) {
-            setStakedStatus(true);
-            setStakedAmount(item.amount);
-            return true;
-          }
-        });
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,45 +155,43 @@ const Market = (props) => {
 
             {loginError && <p>Invalid Wallet</p>}
 
-            {wallet && stakedStatus && (
-              <div className='vote-buttons'>
-                <button
-                  style={{ marginRight: '15px' }}
-                  onClick={() =>
-                    onMarketStake(
-                      props.location.data.marketId,
-                      'yay',
-                      stakedAmount
-                    )
-                  }
-                >
-                  Yay
-                </button>
-                <button
-                  onClick={() =>
-                    onMarketStake(
-                      props.location.data.marketId,
-                      'nay',
-                      stakedAmount
-                    )
-                  }
-                >
-                  Nay
-                </button>
-              </div>
-            )}
-
-            {wallet && !stakedStatus && (
-              <div className='stake-container'>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {wallet && (
+              <>
+                <div className='input-container'>
                   <span>Amount to Stake</span>
                   <input
                     type='number'
-                    onChange={(e) => setLockQty(e.target.value)}
+                    min={1}
+                    onChange={(e) => setStakeQty(e.target.value)}
+                    placeholder='Stake > 0'
                   />
                 </div>
-                <button onClick={onLockTokens}>Stake</button>
-              </div>
+                <div className='vote-buttons'>
+                  <button
+                    style={{ marginRight: '15px' }}
+                    onClick={() =>
+                      onMarketStake(
+                        props.location.data.marketId,
+                        'yay',
+                        stakeQty
+                      )
+                    }
+                  >
+                    Yay
+                  </button>
+                  <button
+                    onClick={() =>
+                      onMarketStake(
+                        props.location.data.marketId,
+                        'nay',
+                        stakeQty
+                      )
+                    }
+                  >
+                    Nay
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </div>
