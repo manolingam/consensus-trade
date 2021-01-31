@@ -56,8 +56,8 @@ const Market = (props) => {
   };
 
   const onMarketStake = async (id, cast, stakedAmount) => {
-    if (stakedAmount > 0) {
-      const trasactionId = await onStake(id, cast, stakedAmount);
+    if (Number(stakedAmount) > 0) {
+      const trasactionId = await onStake(id, cast, Number(stakedAmount));
       setTxId(trasactionId);
       setModalStatus(true);
       console.log(trasactionId);
@@ -213,7 +213,7 @@ const Market = (props) => {
               check yout transaction status{' '}
               <a
                 id='transaction-id'
-                href={`https://viewblock.io/arweave/address/${txId}`}
+                href={`https://viewblock.io/arweave/tx/${txId}`}
                 target='_blank'
                 rel='noopener noreferrer'
               >

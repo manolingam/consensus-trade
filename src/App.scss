@@ -213,16 +213,13 @@
         }
         button {
           width: 100px;
-        }
-        input,
-        button {
           background-color: $background-color;
           border: 3px solid $background-color;
           font-size: 0.8rem;
           padding: 0.8rem;
           color: $font-color;
         }
-        input:hover,
+
         button:hover {
           background-color: $font-color;
           color: $background-color;
@@ -236,6 +233,9 @@
         margin-bottom: 15px;
         input {
           background-color: $font-color;
+          border: 3px solid $background-color;
+          font-size: 0.8rem;
+          padding: 0.8rem;
         }
       }
     }
