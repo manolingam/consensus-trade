@@ -19,10 +19,12 @@ import useContract from '../hooks/useContract';
 
 Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
-// const LOCK_LENGTH = 2160;
+const LOCK_LENGTH = 2160;
 
 const Market = (props) => {
   const [modalStatus, setModalStatus] = useState(false);
+  const [blockHeight, setBlockHeight] = useState('');
+  const [marketEndHeight, setMarketEndHeight] = useState('');
 
   const [wallet, setWallet] = useState(null);
   const [address, setAddress] = useState(null);
@@ -35,7 +37,7 @@ const Market = (props) => {
 
   const arweave = useArweave();
 
-  const { onStake } = useContract(wallet);
+  const { onStake, onDisburse } = useContract(wallet);
 
   const uploadWallet = async (e) => {
     setLoading(true);
@@ -55,6 +57,14 @@ const Market = (props) => {
     setLoading(false);
   };
 
+  const getBlockHeight = async () => {
+    let result = await fetch('https://arweave.net/info');
+    result = await result.json();
+
+    setBlockHeight(result.height);
+    setMarketEndHeight(props.location.data.start + LOCK_LENGTH);
+  };
+
   const onMarketStake = async (id, cast, stakedAmount) => {
     if (Number(stakedAmount) > 0) {
       const trasactionId = await onStake(id, cast, Number(stakedAmount));
@@ -67,6 +77,13 @@ const Market = (props) => {
     }
   };
 
+  const onConcludeMarket = async (id) => {
+    const trasactionId = await onDisburse(id);
+    setTxId(trasactionId);
+    setModalStatus(true);
+    console.log(trasactionId);
+  };
+
   useEffect(() => {
     if (wallet) {
       arweave.wallets.jwkToAddress(wallet).then((address) => {
@@ -77,24 +94,28 @@ const Market = (props) => {
   }, [arweave.wallets, wallet]);
 
   useEffect(() => {
-    var config = {
-      type: 'pie',
-      data: {
-        datasets: [
-          {
-            data: [props.location.data.yays, props.location.data.nays],
-            backgroundColor: ['#444554', '#cfcfea'],
-            label: 'Votes'
-          }
-        ],
-        labels: ['Yays', 'Nays']
-      },
-      options: {
-        responsive: true
-      }
-    };
-    var ctx = document.getElementById('myChart').getContext('2d');
-    new Chart(ctx, config);
+    if (props.location.data.yays || props.location.data.nays) {
+      var config = {
+        type: 'pie',
+        data: {
+          datasets: [
+            {
+              data: [props.location.data.yays, props.location.data.nays],
+              backgroundColor: ['#444554', '#cfcfea'],
+              label: 'Votes'
+            }
+          ],
+          labels: ['Yays', 'Nays']
+        },
+        options: {
+          responsive: true
+        }
+      };
+      var ctx = document.getElementById('myChart').getContext('2d');
+      new Chart(ctx, config);
+    }
+
+    getBlockHeight();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -133,17 +154,75 @@ const Market = (props) => {
 
         <div className='right-container'>
           <div id='chart-container'>
-            <canvas
-              id='myChart'
-              style={{ maxWidth: '100%', maxHeight: '100%' }}
-            ></canvas>
+            {props.location.data.yays || props.location.data.nays ? (
+              <canvas
+                id='myChart'
+                style={{ maxWidth: '100%', maxHeight: '100%' }}
+              ></canvas>
+            ) : (
+              <p style={{ fontSize: '28px' }}>No votes yet</p>
+            )}
           </div>
+
           <div className='vote-container'>
-            {!wallet && (
-              <>
-                <label>Select a Wallet to Vote</label>
-                <input type='file' onChange={uploadWallet} />
-              </>
+            {props.location.data.status === 'active' ? (
+              !wallet ? (
+                <>
+                  <label>Select a Wallet to Vote</label>
+                  <input
+                    type='file'
+                    id='wallet-input'
+                    onChange={uploadWallet}
+                  />
+                </>
+              ) : blockHeight < marketEndHeight ? (
+                <>
+                  <div className='input-container'>
+                    <span>Amount to Stake</span>
+                    <input
+                      type='number'
+                      min={1}
+                      onChange={(e) => setStakeQty(e.target.value)}
+                      placeholder='Stake > 0'
+                    />
+                  </div>
+                  <div className='vote-buttons'>
+                    <button
+                      style={{ marginRight: '15px' }}
+                      onClick={() =>
+                        onMarketStake(
+                          props.location.data.marketId,
+                          'yay',
+                          stakeQty
+                        )
+                      }
+                    >
+                      Yay
+                    </button>
+                    <button
+                      onClick={() =>
+                        onMarketStake(
+                          props.location.data.marketId,
+                          'nay',
+                          stakeQty
+                        )
+                      }
+                    >
+                      Nay
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button
+                  onClick={() => onConcludeMarket(props.location.data.marketId)}
+                >
+                  Finalize Market
+                </button>
+              )
+            ) : (
+              <p style={{ fontSize: '24px' }}>
+                Market {props.location.data.status}
+              </p>
             )}
 
             {loading && (
@@ -154,45 +233,6 @@ const Market = (props) => {
             )}
 
             {loginError && <p>Invalid Wallet</p>}
-
-            {wallet && (
-              <>
-                <div className='input-container'>
-                  <span>Amount to Stake</span>
-                  <input
-                    type='number'
-                    min={1}
-                    onChange={(e) => setStakeQty(e.target.value)}
-                    placeholder='Stake > 0'
-                  />
-                </div>
-                <div className='vote-buttons'>
-                  <button
-                    style={{ marginRight: '15px' }}
-                    onClick={() =>
-                      onMarketStake(
-                        props.location.data.marketId,
-                        'yay',
-                        stakeQty
-                      )
-                    }
-                  >
-                    Yay
-                  </button>
-                  <button
-                    onClick={() =>
-                      onMarketStake(
-                        props.location.data.marketId,
-                        'nay',
-                        stakeQty
-                      )
-                    }
-                  >
-                    Nay
-                  </button>
-                </div>
-              </>
-            )}
           </div>
         </div>
         <div></div>

@@ -211,6 +211,13 @@
           font-size: 0.8rem;
           margin-bottom: 15px;
         }
+
+        #wallet-input {
+          background-color: $background-color;
+          color: $font-color;
+          padding: 1rem;
+        }
+
         button {
           width: 100px;
           background-color: $background-color;
