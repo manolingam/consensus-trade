@@ -2,18 +2,18 @@ import { interactWrite, readContract } from 'smartweave';
 
 import useArweave from './useArweave';
 
-const PROD_CONTRACT_ADDRESS = '8zGVX17V6u3Uzn2fWJFya3vEuPOvIZ6FRifUDhaprtE';
+const TEST_CONTRACT_ADDRESS = 'HJfFTVxB0kSkr2Q5soVYtoMN4nZd-WZHs1Kv0g2lHuY';
 
 export default function useContracts(wallet) {
   const arweave = useArweave();
 
   const getContractState = async () => {
-    const contractState = await readContract(arweave, PROD_CONTRACT_ADDRESS);
+    const contractState = await readContract(arweave, TEST_CONTRACT_ADDRESS);
     return contractState;
   };
 
   const onStake = async (id, cast, stakedAmount) => {
-    const txId = await interactWrite(arweave, wallet, PROD_CONTRACT_ADDRESS, {
+    const txId = await interactWrite(arweave, wallet, TEST_CONTRACT_ADDRESS, {
       function: 'stake',
       id,
       cast,
@@ -23,7 +23,7 @@ export default function useContracts(wallet) {
   };
 
   const onDisburse = async (id) => {
-    const txId = await interactWrite(arweave, wallet, PROD_CONTRACT_ADDRESS, {
+    const txId = await interactWrite(arweave, wallet, TEST_CONTRACT_ADDRESS, {
       function: 'disburse',
       id
     });

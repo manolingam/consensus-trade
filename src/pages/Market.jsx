@@ -21,7 +21,7 @@ import useContract from '../hooks/useContract';
 
 Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
-const LOCK_LENGTH = 2160;
+// const LOCK_LENGTH = 2160;
 
 const Market = (props) => {
   const { marketId } = useParams();
@@ -29,8 +29,6 @@ const Market = (props) => {
 
   const [market, setMarket] = useState('');
   const [tokenBalances, setTokenBalances] = useState('');
-  const [blockHeight, setBlockHeight] = useState('');
-  const [marketEndHeight, setMarketEndHeight] = useState('');
   const [marketEndDate, setMarketEndDate] = useState('');
   const [wallet, setWallet] = useState(null);
   const [address, setAddress] = useState(null);
@@ -64,14 +62,6 @@ const Market = (props) => {
     setLoading(false);
   };
 
-  const getBlockHeight = async () => {
-    let result = await fetch('https://arweave.net/info');
-    result = await result.json();
-
-    setBlockHeight(result.height);
-    setMarketEndHeight(market.start + LOCK_LENGTH);
-  };
-
   const onMarketStake = async (id, cast, stakedAmount) => {
     if (stakeStatus) {
       return toast({
@@ -89,7 +79,12 @@ const Market = (props) => {
       console.log(trasactionId);
     } else {
       setTxId('Invalid Inputs');
-      alert('Stake cannot be zero!');
+      toast({
+        title: 'Stake Amount must be greater than zero.',
+        status: 'error',
+        duration: 5000,
+        position: 'top'
+      });
     }
   };
 
@@ -139,7 +134,6 @@ const Market = (props) => {
   useEffect(() => {
     if (market) {
       setChartConfig();
-      getBlockHeight();
       const copy = new Date(Number(new Date(market.tweetCreated)));
       copy.setDate(new Date(market.tweetCreated).getDate() + 3);
       setMarketEndDate(copy);
@@ -211,7 +205,7 @@ const Market = (props) => {
                         onChange={uploadWallet}
                       />
                     </>
-                  ) : blockHeight < marketEndHeight ? (
+                  ) : (
                     <>
                       <div className='input-container'>
                         <span>Amount to Stake</span>
@@ -232,18 +226,18 @@ const Market = (props) => {
                           Yay
                         </button>
                         <button
+                          style={{ marginRight: '15px' }}
                           onClick={() =>
                             onMarketStake(marketId, 'nay', stakeQty)
                           }
                         >
                           Nay
                         </button>
+                        <button onClick={() => onConcludeMarket(marketId)}>
+                          Finalize Market
+                        </button>
                       </div>
                     </>
-                  ) : (
-                    <button onClick={() => onConcludeMarket(marketId)}>
-                      Finalize Market
-                    </button>
                   )
                 ) : (
                   <p style={{ fontSize: '24px' }}>Market {market.status}</p>
