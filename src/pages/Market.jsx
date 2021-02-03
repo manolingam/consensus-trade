@@ -89,7 +89,12 @@ const Market = (props) => {
       console.log(trasactionId);
     } else {
       setTxId('Invalid Inputs');
-      alert('Stake cannot be zero!');
+      toast({
+        title: 'Stake Amount must be greater than zero.',
+        status: 'error',
+        duration: 5000,
+        position: 'top'
+      });
     }
   };
 
