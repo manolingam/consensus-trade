@@ -21,20 +21,34 @@
   }
 }
 
-#address {
-  position: fixed;
+.address-container {
+  position: absolute;
   right: 0;
   top: 0;
   margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
-.front-page {
-  height: 100vh;
+.chakra-toast {
+  font-family: $primary-font;
+
+  .chakra-alert {
+    background-color: $background-color;
+    color: $font-color;
+    border-radius: 0;
+    padding: 15px;
+  }
+}
+
+.top-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
+  margin-bottom: 50px;
   .fa-users {
     position: absolute;
     top: 0;
@@ -61,11 +75,19 @@
   }
 }
 
-.home {
-  height: 100%;
+.bottom-container {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1rem;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
   h3 {
     font-size: 1.2rem;
     margin-right: auto;
@@ -127,9 +149,12 @@
 }
 
 .market {
+  height: 100vh;
   width: 100%;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   .fa-arrow-left {
     position: absolute;
@@ -147,7 +172,6 @@
     display: grid;
     grid-template-columns: 1fr 5fr 5fr 1fr;
     grid-gap: 75px;
-    margin-top: 200px;
 
     .left-container,
     .right-container {

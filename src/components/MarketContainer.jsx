@@ -10,10 +10,7 @@ const MarketContainer = ({ category, markets }) => {
         {markets.length !== 0 ? (
           markets.map((market, index) => {
             return (
-              <Link
-                key={index}
-                to={{ pathname: `/market/${market.marketId}`, data: market }}
-              >
+              <Link key={index} to={{ pathname: `/market/${market.marketId}` }}>
                 <MarketCard data={market} />
               </Link>
             );

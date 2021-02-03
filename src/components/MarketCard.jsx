@@ -29,6 +29,16 @@ const MarketCard = ({ data }) => {
         </p>
         <p></p>
       </div>
+
+      {data.yays > data.nays && (
+        <p style={{ color: '#00af91' }}>
+          Consensus for this assertion is "Yes"
+        </p>
+      )}
+      {data.yays < data.nays && (
+        <p style={{ color: '#ff5e78' }}>Consensus for this assertion is "No"</p>
+      )}
+
       <span id='date'>{new Date(data.tweetCreated).toDateString()}</span>
     </div>
   );

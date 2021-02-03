@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Spinner } from '@chakra-ui/react';
 
 import MarketContainer from '../components/MarketContainer';
 
@@ -24,6 +25,7 @@ const Home = () => {
     let passed_markets = [];
     let failed_markets = [];
 
+    console.log(contractState);
     if (contractState) {
       for (var key in contractState.markets) {
         if (contractState.markets[key].status === 'active') {
@@ -52,7 +54,7 @@ const Home = () => {
 
   return (
     <div className='home'>
-      <div className='front-page'>
+      <div className='top-container'>
         <a
           href='https://community.xyz/#HRut8B98Oe6pjs6OnZBfq93DhQVtRT9VfOER3e1-Ajg'
           target='_blank'
@@ -71,15 +73,23 @@ const Home = () => {
         </>
       </div>
 
-      {activeMarkets && (
-        <MarketContainer category='Active' markets={activeMarkets} />
-      )}
-      {passedMarkets && (
-        <MarketContainer category='Passed' markets={passedMarkets} />
-      )}
-      {failedMarkets && (
-        <MarketContainer category='Failed' markets={failedMarkets} />
-      )}
+      <div className='bottom-container'>
+        {contractState ? (
+          <>
+            {activeMarkets && (
+              <MarketContainer category='Active' markets={activeMarkets} />
+            )}
+            {passedMarkets && (
+              <MarketContainer category='Passed' markets={passedMarkets} />
+            )}
+            {failedMarkets && (
+              <MarketContainer category='Failed' markets={failedMarkets} />
+            )}
+          </>
+        ) : (
+          <Spinner size='xl' />
+        )}
+      </div>
     </div>
   );
 };
