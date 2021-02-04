@@ -169,17 +169,17 @@ const Market = (props) => {
       {market && (
         <>
           <div className='grid-container'>
-            <div></div>
             <div className='left-container'>
-              <div className='info-container'>
+              <div className='avatar-container'>
                 <Avatar
                   name={market.tweetUsername}
                   size='md'
                   src={market.tweetPhoto}
                 />
                 <h1>{market.tweetUsername}</h1>
-                <p id='description'>{market.tweet}</p>
               </div>
+
+              <p id='description'>{market.tweet}</p>
 
               <div className='stat-container'>
                 <div>
@@ -264,7 +264,6 @@ const Market = (props) => {
                 {loginError && <p>Invalid Wallet</p>}
               </div>
             </div>
-            <div></div>
           </div>
         </>
       )}
