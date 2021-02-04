@@ -25,7 +25,6 @@ const Home = () => {
     let passed_markets = [];
     let failed_markets = [];
 
-    console.log(contractState);
     if (contractState) {
       for (var key in contractState.markets) {
         if (contractState.markets[key].status === 'active') {
