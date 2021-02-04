@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link } from 'react-router-dom';
 
@@ -7,6 +7,7 @@ import { Switch } from '@chakra-ui/react';
 import MarketCard from './MarketCard.jsx';
 
 const MarketContainer = ({ category, markets }) => {
+  const [recentMarkets, setRecentMarkets] = useState([]);
   const [popularMarkets, setPopularMarkets] = useState('');
   const [checkboxStatus, setCheckboxStatus] = useState(false);
 
@@ -26,6 +27,13 @@ const MarketContainer = ({ category, markets }) => {
     sortMarkets();
     setCheckboxStatus((prevState) => !prevState);
   };
+
+  useEffect(() => {
+    if (markets) {
+      let markets_reversed = markets.reverse();
+      setRecentMarkets(markets_reversed);
+    }
+  }, [markets]);
 
   return (
     <>
@@ -53,7 +61,7 @@ const MarketContainer = ({ category, markets }) => {
         )}
       </div>
       <div className='markets-container'>
-        {markets.length !== 0 ? (
+        {recentMarkets.length !== 0 ? (
           checkboxStatus ? (
             popularMarkets.map((market, index) => {
               return (
@@ -66,7 +74,7 @@ const MarketContainer = ({ category, markets }) => {
               );
             })
           ) : (
-            markets.map((market, index) => {
+            recentMarkets.map((market, index) => {
               return (
                 <Link
                   key={index}
