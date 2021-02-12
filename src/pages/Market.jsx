@@ -72,8 +72,8 @@ const Market = (props) => {
       });
     }
 
-    if (Number(stakedAmount) > 0) {
-      const trasactionId = await onStake(id, cast, Number(stakedAmount));
+    if (stakedAmount > 0) {
+      const trasactionId = await onStake(id, cast, stakedAmount);
       setTxId(trasactionId);
       setModalStatus(true);
       console.log(trasactionId);
@@ -212,7 +212,10 @@ const Market = (props) => {
                         <input
                           type='number'
                           min={1}
-                          onChange={(e) => setStakeQty(e.target.value)}
+                          step='1'
+                          onChange={(e) =>
+                            setStakeQty(parseInt(e.target.value))
+                          }
                           placeholder='Stake > 0'
                         />
                       </div>
