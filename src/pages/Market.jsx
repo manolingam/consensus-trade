@@ -21,6 +21,8 @@ import useContract from '../hooks/useContract';
 
 Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
+const axios = require('axios');
+
 const LOCK_LENGTH = 2160;
 
 const Market = (props) => {
@@ -103,6 +105,17 @@ const Market = (props) => {
     setTxId(trasactionId);
     setModalStatus(true);
     console.log(trasactionId);
+
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT, {
+        marketID: id
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const setChartConfig = () => {
