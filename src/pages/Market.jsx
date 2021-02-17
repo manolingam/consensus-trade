@@ -37,7 +37,7 @@ const Market = (props) => {
   const [marketEndUnix, setMarketEndUnix] = useState('');
   const [marketCreatedUnix, setMarketCreatedUnix] = useState('');
 
-  const [stakeStatus, setStakeStatus] = useState(false);
+  // const [stakeStatus, setStakeStatus] = useState(false);
   const [txModalStatus, setTxModalStatus] = useState(false);
   const [stakersModalStatus, setStakersModalStatus] = useState(false);
   const [loginError, setLoginError] = useState(false);
@@ -66,14 +66,14 @@ const Market = (props) => {
   };
 
   const onMarketStake = async (id, cast, stakedAmount) => {
-    if (stakeStatus) {
-      return toast({
-        title: 'Cannot stake more than once.',
-        status: 'error',
-        duration: 5000,
-        position: 'top'
-      });
-    }
+    // if (stakeStatus) {
+    //   return toast({
+    //     title: 'Cannot stake more than once.',
+    //     status: 'error',
+    //     duration: 5000,
+    //     position: 'top'
+    //   });
+    // }
 
     if (stakedAmount > 0) {
       const trasactionId = await onStake(id, cast, stakedAmount);
@@ -137,9 +137,9 @@ const Market = (props) => {
       arweave.wallets.jwkToAddress(wallet).then((address) => {
         setAddress(address);
         // eslint-disable-next-line array-callback-return
-        market.staked.map((staker) => {
-          if (staker.address === address) setStakeStatus(true);
-        });
+        // market.staked.map((staker) => {
+        //   if (staker.address === address) setStakeStatus(true);
+        // });
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
