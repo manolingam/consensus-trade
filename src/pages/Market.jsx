@@ -23,7 +23,7 @@ Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
 const axios = require('axios');
 
-const LOCK_LENGTH = 2160;
+const LOCK_LENGTH = 259200000;
 
 const Market = (props) => {
   const { marketId } = useParams();
@@ -31,7 +31,6 @@ const Market = (props) => {
 
   const [market, setMarket] = useState('');
   const [tokenBalances, setTokenBalances] = useState('');
-  const [blockHeight, setBlockHeight] = useState('');
   const [marketEndHeight, setMarketEndHeight] = useState('');
   const [marketEndDate, setMarketEndDate] = useState('');
   const [wallet, setWallet] = useState(null);
@@ -44,8 +43,6 @@ const Market = (props) => {
   const [stakersModalStatus, setStakersModalStatus] = useState(false);
   const [loginError, setLoginError] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  console.log(blockHeight, marketEndHeight);
 
   const arweave = useArweave();
 
@@ -67,16 +64,6 @@ const Market = (props) => {
       fileReader.readAsText(e.target.files[0]);
     }
     setLoading(false);
-  };
-
-  const getBlockHeight = async () => {
-    let result = await fetch('https://arweave.net/info');
-    result = await result.json();
-
-    console.log(market);
-
-    setBlockHeight(result.height);
-    setMarketEndHeight(market.start + LOCK_LENGTH);
   };
 
   const onMarketStake = async (id, cast, stakedAmount) => {
@@ -162,7 +149,7 @@ const Market = (props) => {
   useEffect(() => {
     if (market) {
       setChartConfig();
-      getBlockHeight();
+      setMarketEndHeight(market.start + LOCK_LENGTH);
       const copy = new Date(Number(new Date(market.tweetCreated)));
       copy.setDate(new Date(market.tweetCreated).getDate() + 3);
       setMarketEndDate(copy);
@@ -244,7 +231,8 @@ const Market = (props) => {
                         onChange={uploadWallet}
                       />
                     </>
-                  ) : blockHeight < marketEndHeight ? (
+                  ) : new Date().getTime() + 3000 * 60 * 60 * 24 <
+                    marketEndHeight ? (
                     <>
                       <div className='input-container'>
                         <span>Amount to Stake</span>
