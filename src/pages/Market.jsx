@@ -38,7 +38,8 @@ const Market = (props) => {
   const [stakeQty, setStakeQty] = useState(0);
 
   const [stakeStatus, setStakeStatus] = useState(false);
-  const [modalStatus, setModalStatus] = useState(false);
+  const [txModalStatus, setTxModalStatus] = useState(false);
+  const [stakersModalStatus, setStakersModalStatus] = useState(false);
   const [loginError, setLoginError] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -77,7 +78,7 @@ const Market = (props) => {
     if (stakedAmount > 0) {
       const trasactionId = await onStake(id, cast, stakedAmount);
       setTxId(trasactionId);
-      setModalStatus(true);
+      setTxModalStatus(true);
       console.log(trasactionId);
     } else {
       setTxId('Invalid Inputs');
@@ -93,7 +94,7 @@ const Market = (props) => {
   const onConcludeMarket = async (id) => {
     const trasactionId = await onDisburse(id);
     setTxId(trasactionId);
-    setModalStatus(true);
+    setTxModalStatus(true);
     console.log(trasactionId);
 
     axios
@@ -198,12 +199,22 @@ const Market = (props) => {
             <div className='right-container'>
               <div id='chart-container'>
                 {market.yays || market.nays ? (
-                  <canvas
-                    id='myChart'
-                    style={{ maxWidth: '100%', maxHeight: '100%' }}
-                  ></canvas>
+                  <>
+                    <canvas
+                      id='myChart'
+                      style={{ maxWidth: '100%', maxHeight: '100%' }}
+                    ></canvas>
+                    <p
+                      id='stakers-button'
+                      onClick={() => setStakersModalStatus(true)}
+                    >
+                      View Stakers
+                    </p>
+                  </>
                 ) : (
-                  <p style={{ fontSize: '28px' }}>No votes yet</p>
+                  <p style={{ fontSize: '28px', marginRight: '50px' }}>
+                    No votes yet
+                  </p>
                 )}
               </div>
 
@@ -234,6 +245,7 @@ const Market = (props) => {
                       </div>
                       <div className='vote-buttons'>
                         <button
+                          className='button'
                           style={{ marginRight: '15px' }}
                           onClick={() =>
                             onMarketStake(marketId, 'yay', stakeQty)
@@ -242,6 +254,7 @@ const Market = (props) => {
                           Yay
                         </button>
                         <button
+                          className='button'
                           style={{ marginRight: '15px' }}
                           onClick={() =>
                             onMarketStake(marketId, 'nay', stakeQty)
@@ -249,7 +262,10 @@ const Market = (props) => {
                         >
                           Nay
                         </button>
-                        <button onClick={() => onConcludeMarket(marketId)}>
+                        <button
+                          className='button'
+                          onClick={() => onConcludeMarket(marketId)}
+                        >
                           Finalize Market
                         </button>
                       </div>
@@ -287,8 +303,8 @@ const Market = (props) => {
       )}
 
       <Modal
-        onClose={() => setModalStatus(false)}
-        isOpen={modalStatus}
+        onClose={() => setTxModalStatus(false)}
+        isOpen={txModalStatus}
         isCentered
       >
         <ModalOverlay />
@@ -312,8 +328,40 @@ const Market = (props) => {
           <ModalFooter>
             <Button
               onClick={() => {
-                setModalStatus(false);
+                setTxModalStatus(false);
                 window.location.href = '/';
+              }}
+            >
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        onClose={() => setStakersModalStatus(false)}
+        isOpen={stakersModalStatus}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Stakers</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {market &&
+              market.staked.map((stakers, index) => {
+                return (
+                  <div className='stakers-container' key={index}>
+                    <p>{stakers.address}</p>
+                    <p>{stakers.amount}</p>
+                  </div>
+                );
+              })}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              onClick={() => {
+                setStakersModalStatus(false);
               }}
             >
               Close
