@@ -31,11 +31,13 @@ const Market = (props) => {
 
   const [market, setMarket] = useState('');
   const [tokenBalances, setTokenBalances] = useState('');
-  const [marketEndDate, setMarketEndDate] = useState('');
   const [wallet, setWallet] = useState(null);
   const [address, setAddress] = useState(null);
   const [txId, setTxId] = useState('');
   const [stakeQty, setStakeQty] = useState(0);
+
+  const [marketEndUnix, setMarketEndUnix] = useState('');
+  const [marketCreatedUnix, setMarketCreatedUnix] = useState('');
 
   const [stakeStatus, setStakeStatus] = useState(false);
   const [txModalStatus, setTxModalStatus] = useState(false);
@@ -148,9 +150,8 @@ const Market = (props) => {
   useEffect(() => {
     if (market) {
       setChartConfig();
-      const copy = new Date(Number(new Date(market.tweetCreated)));
-      copy.setDate(new Date(market.tweetCreated).getDate() + 3);
-      setMarketEndDate(copy);
+      setMarketCreatedUnix(market.tweetCreated);
+      setMarketEndUnix(market.tweetCreated + 3000 * 60 * 60 * 24);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [market]);
@@ -182,16 +183,22 @@ const Market = (props) => {
                 <h1>{market.tweetUsername}</h1>
               </div>
 
-              <p id='description'>{market.tweet}</p>
+              <a
+                id='description'
+                href={market.tweetLink}
+                style={{ textDecoration: 'underline' }}
+              >
+                {market.tweet}
+              </a>
 
               <div className='stat-container'>
                 <div>
                   <span>Market created on</span>
-                  <p>{new Date(market.tweetCreated).toDateString()}</p>
+                  <p>{new Date(marketCreatedUnix).toDateString()}</p>
                 </div>
                 <div>
                   <span>Market ends on</span>
-                  <p>{new Date(marketEndDate).toDateString()}</p>
+                  <p>{new Date(marketEndUnix).toDateString()}</p>
                 </div>
               </div>
             </div>

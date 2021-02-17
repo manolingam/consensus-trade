@@ -16,9 +16,7 @@ const MarketCard = ({ data }) => {
         <Avatar name={data.tweetUsername} size='md' src={data.tweetPhoto} />
         <h4>{data.tweetUsername}</h4>
       </div>
-      <a id='note' href={data.tweetLink}>
-        {data.tweet}
-      </a>
+      <p id='note'>{data.tweet}</p>
 
       <div className='votes-container'>
         <p>
