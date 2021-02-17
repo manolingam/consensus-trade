@@ -227,7 +227,9 @@ const Market = (props) => {
                     </p>
                   </>
                 ) : (
-                  <p style={{ fontSize: '28px' }}>No votes yet</p>
+                  <p style={{ fontSize: '28px', marginRight: '50px' }}>
+                    No votes yet
+                  </p>
                 )}
               </div>
 
