@@ -2,7 +2,7 @@ import { interactWrite, readContract } from 'smartweave';
 
 import useArweave from './useArweave';
 
-const TEST_CONTRACT_ADDRESS = '8GU6bCVo_ageRXtLEAhNODkzLEMHAycy_d4CprxXlbw';
+const TEST_CONTRACT_ADDRESS = 'f1wibc4fPQbcOtHR9ZlcfiJZicJSHA2mgETC-3WHMME';
 
 export default function useContracts(wallet) {
   const arweave = useArweave();
