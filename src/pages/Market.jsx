@@ -31,11 +31,12 @@ const Market = (props) => {
   const [tokenBalances, setTokenBalances] = useState('');
   const [wallet, setWallet] = useState(null);
   const [address, setAddress] = useState(null);
-  const [txId, setTxId] = useState('');
-  const [stakeQty, setStakeQty] = useState(0);
+  const [stakers, setStakers] = useState('');
 
   const [marketEndUnix, setMarketEndUnix] = useState('');
   const [marketCreatedUnix, setMarketCreatedUnix] = useState('');
+  const [txId, setTxId] = useState('');
+  const [stakeQty, setStakeQty] = useState(0);
 
   // const [stakeStatus, setStakeStatus] = useState(false);
   const [txModalStatus, setTxModalStatus] = useState(false);
@@ -147,9 +148,20 @@ const Market = (props) => {
 
   useEffect(() => {
     if (market) {
+      let stakers = [];
+
       setChartConfig();
       setMarketCreatedUnix(market.tweetCreated);
       setMarketEndUnix(market.tweetCreated + 3000 * 60 * 60 * 24);
+
+      for (let key in market.staked) {
+        stakers.push({
+          address: market.staked[key].address,
+          amount: market.staked[key].amount
+        });
+      }
+
+      setStakers(stakers);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [market]);
@@ -354,12 +366,12 @@ const Market = (props) => {
           <ModalHeader>Stakers</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {market &&
-              market.staked.map((stakers, index) => {
+            {stakers &&
+              stakers.map((item, index) => {
                 return (
                   <div className='stakers-container' key={index}>
-                    <p>{stakers.address}</p>
-                    <p>{stakers.amount}</p>
+                    <p>{item.address}</p>
+                    <p>{item.amount}</p>
                   </div>
                 );
               })}
