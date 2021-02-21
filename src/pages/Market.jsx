@@ -38,7 +38,7 @@ const Market = (props) => {
   const [txId, setTxId] = useState('');
   const [stakeQty, setStakeQty] = useState(0);
 
-  // const [stakeStatus, setStakeStatus] = useState(false);
+  const [stakerCast, setStakerCast] = useState('');
   const [txModalStatus, setTxModalStatus] = useState(false);
   const [stakersModalStatus, setStakersModalStatus] = useState(false);
   const [loginError, setLoginError] = useState(false);
@@ -54,7 +54,6 @@ const Market = (props) => {
     fileReader.onload = async (e) => {
       try {
         setWallet(JSON.parse(e.target.result));
-        // console.log(wallet);
       } catch (err) {
         setLoginError(true);
         console.error('Invalid wallet was uploaded.', err);
@@ -67,16 +66,19 @@ const Market = (props) => {
   };
 
   const onMarketStake = async (id, cast, stakedAmount) => {
-    // if (stakeStatus) {
-    //   return toast({
-    //     title: 'Cannot stake more than once.',
-    //     status: 'error',
-    //     duration: 5000,
-    //     position: 'top'
-    //   });
-    // }
-
     if (stakedAmount > 0) {
+      if (
+        (stakerCast === 'yay' && cast === 'nay') ||
+        (stakerCast === 'nay' && cast === 'yay')
+      ) {
+        return toast({
+          title: 'Cannot stake on both sides.',
+          status: 'error',
+          duration: 5000,
+          position: 'top'
+        });
+      }
+
       const trasactionId = await onStake(id, cast, stakedAmount);
       setTxId(trasactionId);
       setTxModalStatus(true);
@@ -137,11 +139,13 @@ const Market = (props) => {
     if (wallet) {
       arweave.wallets.jwkToAddress(wallet).then((address) => {
         setAddress(address);
-        // eslint-disable-next-line array-callback-return
-        // market.staked.map((staker) => {
-        //   if (staker.address === address) setStakeStatus(true);
-        // });
       });
+
+      for (let key in market.staked) {
+        if (key === address) {
+          return setStakerCast(market.staked[key].cast);
+        }
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arweave.wallets, wallet]);
