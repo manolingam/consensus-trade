@@ -23,6 +23,8 @@ Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
 const axios = require('axios');
 
+const VOTE_LENGTH = 2160;
+
 const Market = (props) => {
   const { marketId } = useParams();
   const toast = useToast();
@@ -35,6 +37,7 @@ const Market = (props) => {
 
   const [marketEndUnix, setMarketEndUnix] = useState('');
   const [marketCreatedUnix, setMarketCreatedUnix] = useState('');
+  const [currentBlockHeight, setCurrentBlockHeight] = useState('');
   const [txId, setTxId] = useState('');
   const [stakeQty, setStakeQty] = useState(0);
 
@@ -175,6 +178,9 @@ const Market = (props) => {
     setTokenBalances(contractState.balances);
     let currentMarket = contractState.markets[marketId];
     setMarket(currentMarket);
+    let blockHeight = await fetch('https://arweave.net/info');
+    blockHeight = await blockHeight.json();
+    setCurrentBlockHeight(blockHeight.height);
   };
 
   useEffect(() => {
@@ -250,7 +256,7 @@ const Market = (props) => {
                         onChange={uploadWallet}
                       />
                     </>
-                  ) : new Date().getTime() < marketEndUnix ? (
+                  ) : currentBlockHeight < market.start + VOTE_LENGTH ? (
                     <>
                       <div className='input-container'>
                         <span>Amount to Stake</span>
