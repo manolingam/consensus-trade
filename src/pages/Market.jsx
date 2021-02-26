@@ -215,11 +215,27 @@ const Market = (props) => {
                 <div>
                   <span>Market created on</span>
                   <p>{new Date(marketCreatedUnix).toDateString()}</p>
+                  <i style={{ fontSize: '10px', textTransform: 'uppercase' }}>
+                    at {market.start} height
+                  </i>
                 </div>
                 <div>
                   <span>Market ends on</span>
                   <p>{new Date(marketEndUnix).toDateString()}</p>
+                  <i style={{ fontSize: '10px', textTransform: 'uppercase' }}>
+                    at {market.start + VOTE_LENGTH} height
+                  </i>
                 </div>
+                <p
+                  style={{
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    color: '#cfcfea',
+                    marginTop: '10px'
+                  }}
+                >
+                  Current height: {currentBlockHeight}
+                </p>
               </div>
             </div>
 
