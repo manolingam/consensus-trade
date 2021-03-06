@@ -55,11 +55,12 @@ const Home = () => {
     <div className='home'>
       <div className='top-container'>
         <a
-          href='https://community.xyz/#HRut8B98Oe6pjs6OnZBfq93DhQVtRT9VfOER3e1-Ajg'
+          // href='https://community.xyz/#HRut8B98Oe6pjs6OnZBfq93DhQVtRT9VfOER3e1-Ajg'
+          href='https://github.com/manolingam/consensus-trade'
           target='_blank'
           rel='noopener noreferrer'
         >
-          <i className='fas fa-users'></i>
+          <i className='fab fa-github'></i>
         </a>
         <img id='logo' src={Logo} width='100px' alt='consensus-trade-logo' />
         <>
