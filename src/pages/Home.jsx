@@ -1,21 +1,66 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Spinner } from '@chakra-ui/react';
 
 import MarketContainer from '../components/MarketContainer';
 
+import useContract from '../hooks/useContract';
+
 import Logo from '../assets/logo.png';
 
-const { MARKETS } = require('../utils/constants');
-
 const Home = () => {
+  const [contractState, setContractState] = useState('');
+  const [activeMarkets, setActiveMarkets] = useState('');
+  const [passedMarkets, setPassedMarkets] = useState('');
+  const [failedMarkets, setFailedMarkets] = useState('');
+
+  const { getContractState } = useContract();
+
+  const fetchContractState = async () => {
+    const newContractState = await getContractState();
+    setContractState(newContractState);
+  };
+
+  useEffect(() => {
+    let active_markets = [];
+    let passed_markets = [];
+    let failed_markets = [];
+
+    if (contractState) {
+      for (var key in contractState.markets) {
+        if (contractState.markets[key].status === 'active') {
+          active_markets.push(contractState.markets[key]);
+        }
+
+        if (contractState.markets[key].status === 'passed') {
+          passed_markets.push(contractState.markets[key]);
+        }
+
+        if (contractState.markets[key].status === 'failed') {
+          failed_markets.push(contractState.markets[key]);
+        }
+      }
+    }
+
+    setActiveMarkets(active_markets);
+    setPassedMarkets(passed_markets);
+    setFailedMarkets(failed_markets);
+  }, [contractState]);
+
+  useEffect(() => {
+    fetchContractState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className='home'>
-      <div className='front-page'>
+      <div className='top-container'>
         <a
-          href='https://community.xyz/#HRut8B98Oe6pjs6OnZBfq93DhQVtRT9VfOER3e1-Ajg'
+          // href='https://community.xyz/#HRut8B98Oe6pjs6OnZBfq93DhQVtRT9VfOER3e1-Ajg'
+          href='https://github.com/manolingam/consensus-trade'
           target='_blank'
           rel='noopener noreferrer'
         >
-          <i className='fas fa-users'></i>
+          <i className='fab fa-github'></i>
         </a>
         <img id='logo' src={Logo} width='100px' alt='consensus-trade-logo' />
         <>
@@ -27,9 +72,24 @@ const Home = () => {
           </p>
         </>
       </div>
-      <MarketContainer category='Recent Markets' MARKETS={MARKETS} />
-      <MarketContainer category='Active Markets' MARKETS={MARKETS} />
-      <MarketContainer category='Concluded Markets' MARKETS={MARKETS} />
+
+      <div className='bottom-container'>
+        {contractState ? (
+          <>
+            {activeMarkets && (
+              <MarketContainer category='Active' markets={activeMarkets} />
+            )}
+            {passedMarkets && (
+              <MarketContainer category='Passed' markets={passedMarkets} />
+            )}
+            {failedMarkets && (
+              <MarketContainer category='Failed' markets={failedMarkets} />
+            )}
+          </>
+        ) : (
+          <Spinner size='xl' />
+        )}
+      </div>
     </div>
   );
 };

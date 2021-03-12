@@ -1,19 +1,47 @@
 import { useState, useEffect } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { Avatar } from '@chakra-ui/react';
+import { Link, withRouter, useParams } from 'react-router-dom';
+import { Spinner, useToast } from '@chakra-ui/react';
+
 import Chart from 'chart.js';
 
 import useArweave from '../hooks/useArweave';
+import useContract from '../hooks/useContract';
+import TransactionModal from '../components/TransactionModal';
+import StakersModal from '../components/StakersModal';
+import MarketInfo from '../components/MarketInfo';
+import MarketVote from '../components/MarketVote';
 
 Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
+const axios = require('axios');
+
+const VOTE_LENGTH = 2160;
+
 const Market = (props) => {
+  const { marketId } = useParams();
+  const toast = useToast();
+
+  const [market, setMarket] = useState('');
+  const [tokenBalances, setTokenBalances] = useState('');
   const [wallet, setWallet] = useState(null);
   const [address, setAddress] = useState(null);
+  const [stakers, setStakers] = useState('');
+
+  const [marketEndUnix, setMarketEndUnix] = useState('');
+  const [marketCreatedUnix, setMarketCreatedUnix] = useState('');
+  const [currentBlockHeight, setCurrentBlockHeight] = useState('');
+  const [txId, setTxId] = useState('');
+  const [stakeQty, setStakeQty] = useState(0);
+
+  const [stakerCast, setStakerCast] = useState('');
+  const [txModalStatus, setTxModalStatus] = useState(false);
+  const [stakersModalStatus, setStakersModalStatus] = useState(false);
   const [loginError, setLoginError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const arweave = useArweave();
+
+  const { getContractState, onStake, onDisburse } = useContract(wallet);
 
   const uploadWallet = async (e) => {
     setLoading(true);
@@ -21,7 +49,6 @@ const Market = (props) => {
     fileReader.onload = async (e) => {
       try {
         setWallet(JSON.parse(e.target.result));
-        console.log(wallet);
       } catch (err) {
         setLoginError(true);
         console.error('Invalid wallet was uploaded.', err);
@@ -33,111 +60,182 @@ const Market = (props) => {
     setLoading(false);
   };
 
+  const onMarketStake = async (id, cast, stakedAmount) => {
+    if (stakedAmount > 0) {
+      if (
+        (stakerCast === 'yay' && cast === 'nay') ||
+        (stakerCast === 'nay' && cast === 'yay')
+      ) {
+        return toast({
+          title: 'Cannot stake on both sides.',
+          status: 'error',
+          duration: 5000,
+          position: 'top'
+        });
+      }
+
+      const trasactionId = await onStake(id, cast, stakedAmount);
+      setTxId(trasactionId);
+      setTxModalStatus(true);
+      console.log(trasactionId);
+    } else {
+      setTxId('Invalid Inputs');
+      toast({
+        title: 'Stake Amount must be greater than zero.',
+        status: 'error',
+        duration: 5000,
+        position: 'top'
+      });
+    }
+  };
+
+  const onConcludeMarket = async (id) => {
+    const trasactionId = await onDisburse(id);
+    setTxId(trasactionId);
+    setTxModalStatus(true);
+    console.log(trasactionId);
+
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT, {
+        marketID: id
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const setChartConfig = () => {
+    if (market.nays || market.yays) {
+      var config = {
+        type: 'pie',
+        data: {
+          datasets: [
+            {
+              data: [market.yays, market.nays],
+              backgroundColor: ['#444554', '#cfcfea'],
+              label: 'Votes'
+            }
+          ],
+          labels: ['Yays', 'Nays']
+        },
+        options: {
+          responsive: true
+        }
+      };
+      var ctx = document.getElementById('myChart').getContext('2d');
+      new Chart(ctx, config);
+    }
+  };
+
   useEffect(() => {
     if (wallet) {
       arweave.wallets.jwkToAddress(wallet).then((address) => {
         setAddress(address);
       });
+
+      for (let key in market.staked) {
+        if (key === address) {
+          return setStakerCast(market.staked[key].cast);
+        }
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arweave.wallets, wallet]);
 
   useEffect(() => {
-    var ctx = document.getElementById('myChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['20 Dec', '21 Dec', '22 Dec', '23 Dec', '24 Dec', '25 Dec'],
-        datasets: [
-          {
-            label: 'Yay Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            // backgroundColor: ['rgba(207, 207, 234, 0.5)'],
-            borderColor: ['#00A5CF'],
-            borderWidth: 1,
-            fill: false
-          },
-          {
-            label: 'Nay Votes',
-            data: [10, 5, 13, 22, 2, 3],
-            // backgroundColor: ['rgba(207, 207, 234, 0.5)'],
-            borderColor: ['#D62246'],
-            borderWidth: 1,
-            fill: false
-          }
-        ]
-      },
-      options: {
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true
-              }
-            }
-          ]
-        }
+    if (market) {
+      let stakers = [];
+
+      setChartConfig();
+      setMarketCreatedUnix(market.tweetCreated);
+      setMarketEndUnix(market.tweetCreated + 3000 * 60 * 60 * 24);
+
+      for (let key in market.staked) {
+        stakers.push({
+          address: market.staked[key].address,
+          amount: market.staked[key].amount
+        });
       }
-    });
+
+      setStakers(stakers);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [market]);
+
+  const initData = async () => {
+    let contractState = await getContractState();
+    setTokenBalances(contractState.balances);
+    let currentMarket = contractState.markets[marketId];
+    setMarket(currentMarket);
+    let blockHeight = await fetch('https://arweave.net/info');
+    blockHeight = await blockHeight.json();
+    setCurrentBlockHeight(blockHeight.height);
+  };
+
+  useEffect(() => {
+    initData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className='market'>
+      {!market && <Spinner size='xl' />}
+
       <Link to='/'>
         <i id='back-icon' className='fas fa-arrow-left'></i>
       </Link>
 
-      <p id='address'>{address}</p>
+      {market && (
+        <>
+          <div className='grid-container'>
+            <MarketInfo
+              market={market}
+              marketCreatedUnix={marketCreatedUnix}
+              marketEndUnix={marketEndUnix}
+              VOTE_LENGTH={VOTE_LENGTH}
+              currentBlockHeight={currentBlockHeight}
+            />
 
-      <Avatar
-        name='Dan Abrahmov'
-        size='xl'
-        src={`https://robohash.org/${props.location.data.id}.png`}
+            <MarketVote
+              market={market}
+              wallet={wallet}
+              currentBlockHeight={currentBlockHeight}
+              VOTE_LENGTH={VOTE_LENGTH}
+              marketId={marketId}
+              stakeQty={stakeQty}
+              loading={loading}
+              loginError={loginError}
+              setStakersModalStatus={setStakersModalStatus}
+              uploadWallet={uploadWallet}
+              setStakeQty={setStakeQty}
+              onMarketStake={onMarketStake}
+              onConcludeMarket={onConcludeMarket}
+            />
+          </div>
+        </>
+      )}
+
+      {address && (
+        <div className='address-container'>
+          <p id='address'>{address}</p>
+          <p>Balance: {tokenBalances[address] || 'NIL'}</p>
+        </div>
+      )}
+
+      <TransactionModal
+        txModalStatus={txModalStatus}
+        txId={txId}
+        setTxModalStatus={setTxModalStatus}
       />
-      <h1>{props.location.data.title}</h1>
-      <p id='description'>{props.location.data.body}</p>
-      <div className='stat-container'>
-        <div>
-          <span>Market ends on</span>
-          <p>{new Date().toDateString()}</p>
-        </div>
-        <div>
-          <span>Trade volume</span>
-          <p>$12,1211</p>
-        </div>
-        <div>
-          <span>Liquidity</span>
-          <p>$12,111</p>
-        </div>
-      </div>
-      <div className='grid-container'>
-        <div id='chart-container'>
-          <canvas
-            id='myChart'
-            style={{ maxWidth: '100%', maxHeight: '100%' }}
-          ></canvas>
-        </div>
-        <div className='vote-container'>
-          {!wallet && (
-            <>
-              <label>Select a Wallet to Vote</label>
-              <input type='file' onChange={uploadWallet} />
-            </>
-          )}
 
-          {loading && (
-            <img src='https://s.svgbox.net/loaders.svg?ic=bars' alt='loader' />
-          )}
-
-          {loginError && <p>Invalid Wallet</p>}
-
-          {wallet && (
-            <div className='vote-buttons'>
-              <button style={{ marginRight: '15px' }}>Yes</button>
-              <button>No</button>
-            </div>
-          )}
-        </div>
-      </div>
+      <StakersModal
+        stakersModalStatus={stakersModalStatus}
+        setStakersModalStatus={setStakersModalStatus}
+        stakers={stakers}
+      />
     </div>
   );
 };
