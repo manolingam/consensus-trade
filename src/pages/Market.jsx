@@ -182,6 +182,12 @@ const Market = (props) => {
 
   return (
     <div className='market'>
+      {!market && <Spinner size='xl' />}
+
+      <Link to='/'>
+        <i id='back-icon' className='fas fa-arrow-left'></i>
+      </Link>
+
       {market && (
         <>
           <div className='grid-container'>
@@ -211,12 +217,6 @@ const Market = (props) => {
           </div>
         </>
       )}
-
-      {!market && <Spinner size='xl' />}
-
-      <Link to='/'>
-        <i id='back-icon' className='fas fa-arrow-left'></i>
-      </Link>
 
       {address && (
         <div className='address-container'>
