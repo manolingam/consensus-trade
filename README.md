@@ -1,3 +1,18 @@
+# Consensus Trade
+
+Consensus Trade allows users to bet on the social consensus around the validity of assertions made on crypto twitter through the use of permaweb.
+
+![app](https://res.cloudinary.com/saimano/image/upload/v1615560840/Consensus%20Trade/consensus_trade_snap.png)
+
+# How to contribute
+There are two branches that's deployed with different contract addresses. Contribute accordingly by means of a PR.
+
+**staging** - This branch is used in production with all checks & constraints defined. The contract address used is `4BM86e-zd_XBSY4nFFH3Kz_9GY2jkcEmnxe7CKqONIw` & the deployment is at https://consensus-trade-git-staging-manolingam.vercel.app/
+
+**experimental** - This branch is for experimentation with no market finalization checks defined. The contract address used is `f1wibc4fPQbcOtHR9ZlcfiJZicJSHA2mgETC-3WHMME` & the deployment is at https://consensus-trade-git-experimental.manolingam.vercel.app/
+
+The contracts are being maintained in a separate repository [here.](https://github.com/raid-guild/consensus-trade-contract)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
