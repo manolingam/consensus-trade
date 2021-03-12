@@ -1,23 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, withRouter, useParams } from 'react-router-dom';
-import {
-  Avatar,
-  Modal,
-  ModalOverlay,
-  ModalHeader,
-  ModalContent,
-  ModalBody,
-  ModalCloseButton,
-  ModalFooter,
-  Button,
-  Spinner,
-  useToast
-} from '@chakra-ui/react';
+import { Spinner, useToast } from '@chakra-ui/react';
 
 import Chart from 'chart.js';
 
 import useArweave from '../hooks/useArweave';
 import useContract from '../hooks/useContract';
+import TransactionModal from '../components/TransactionModal';
+import StakersModal from '../components/StakersModal';
+import MarketInfo from '../components/MarketInfo';
+import MarketVote from '../components/MarketVote';
 
 Chart.defaults.global.defaultFontFamily = "'Roboto Mono', monospace";
 
@@ -193,141 +185,29 @@ const Market = (props) => {
       {market && (
         <>
           <div className='grid-container'>
-            <div className='left-container'>
-              <div className='avatar-container'>
-                <Avatar
-                  name={market.tweetUsername}
-                  size='md'
-                  src={market.tweetPhoto}
-                />
-                <h1>{market.tweetUsername}</h1>
-              </div>
+            <MarketInfo
+              market={market}
+              marketCreatedUnix={marketCreatedUnix}
+              marketEndUnix={marketEndUnix}
+              VOTE_LENGTH={VOTE_LENGTH}
+              currentBlockHeight={currentBlockHeight}
+            />
 
-              <a
-                id='description'
-                href={market.tweetLink}
-                style={{ textDecoration: 'underline' }}
-              >
-                {market.tweet}
-              </a>
-
-              <div className='stat-container'>
-                <div>
-                  <span>Market created on</span>
-                  <p>{new Date(marketCreatedUnix).toDateString()}</p>
-                  <i style={{ fontSize: '10px', textTransform: 'uppercase' }}>
-                    at {market.start} height
-                  </i>
-                </div>
-                <div>
-                  <span>Market ends on</span>
-                  <p>{new Date(marketEndUnix).toDateString()}</p>
-                  <i style={{ fontSize: '10px', textTransform: 'uppercase' }}>
-                    at {market.start + VOTE_LENGTH} height
-                  </i>
-                </div>
-                <p
-                  style={{
-                    fontSize: '10px',
-                    textTransform: 'uppercase',
-                    color: '#cfcfea',
-                    marginTop: '10px'
-                  }}
-                >
-                  Current height: {currentBlockHeight}
-                </p>
-              </div>
-            </div>
-
-            <div className='right-container'>
-              <div id='chart-container'>
-                {market.yays || market.nays ? (
-                  <>
-                    <canvas
-                      id='myChart'
-                      style={{ maxWidth: '100%', maxHeight: '100%' }}
-                    ></canvas>
-                    <p
-                      id='stakers-button'
-                      onClick={() => setStakersModalStatus(true)}
-                    >
-                      View Stakers
-                    </p>
-                  </>
-                ) : (
-                  <p style={{ fontSize: '28px', marginRight: '50px' }}>
-                    No votes yet
-                  </p>
-                )}
-              </div>
-
-              <div className='vote-container'>
-                {market.status === 'active' ? (
-                  !wallet ? (
-                    <>
-                      <label>Select a Wallet to Vote</label>
-                      <input
-                        type='file'
-                        id='wallet-input'
-                        onChange={uploadWallet}
-                      />
-                    </>
-                  ) : currentBlockHeight < market.start + VOTE_LENGTH ? (
-                    <>
-                      <div className='input-container'>
-                        <span>Amount to Stake</span>
-                        <input
-                          type='number'
-                          min={1}
-                          step='1'
-                          onChange={(e) =>
-                            setStakeQty(parseInt(e.target.value))
-                          }
-                          placeholder='Stake > 0'
-                        />
-                      </div>
-                      <div className='vote-buttons'>
-                        <button
-                          className='button'
-                          style={{ marginRight: '15px' }}
-                          onClick={() =>
-                            onMarketStake(marketId, 'yay', stakeQty)
-                          }
-                        >
-                          Yay
-                        </button>
-                        <button
-                          className='button'
-                          onClick={() =>
-                            onMarketStake(marketId, 'nay', stakeQty)
-                          }
-                        >
-                          Nay
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <button
-                      className='button'
-                      onClick={() => onConcludeMarket(marketId)}
-                    >
-                      Finalize Market
-                    </button>
-                  )
-                ) : (
-                  <p style={{ fontSize: '24px' }}>Market {market.status}</p>
-                )}
-
-                {loading && (
-                  <img
-                    src='https://s.svgbox.net/loaders.svg?ic=bars'
-                    alt='loader'
-                  />
-                )}
-
-                {loginError && <p>Invalid Wallet</p>}
-              </div>
-            </div>
+            <MarketVote
+              market={market}
+              wallet={wallet}
+              currentBlockHeight={currentBlockHeight}
+              VOTE_LENGTH={VOTE_LENGTH}
+              marketId={marketId}
+              stakeQty={stakeQty}
+              loading={loading}
+              loginError={loginError}
+              setStakersModalStatus={setStakersModalStatus}
+              uploadWallet={uploadWallet}
+              setStakeQty={setStakeQty}
+              onMarketStake={onMarketStake}
+              onConcludeMarket={onConcludeMarket}
+            />
           </div>
         </>
       )}
@@ -345,74 +225,17 @@ const Market = (props) => {
         </div>
       )}
 
-      <Modal
-        onClose={() => setTxModalStatus(false)}
-        isOpen={txModalStatus}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Transaction Submitted!</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <p>
-              It takes variable time to update the state. By the time, you can
-              check yout transaction status{' '}
-              <a
-                id='transaction-id'
-                href={`https://viewblock.io/arweave/tx/${txId}`}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                here.
-              </a>
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              onClick={() => {
-                setTxModalStatus(false);
-                window.location.href = '/';
-              }}
-            >
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <TransactionModal
+        txModalStatus={txModalStatus}
+        txId={txId}
+        setTxModalStatus={setTxModalStatus}
+      />
 
-      <Modal
-        onClose={() => setStakersModalStatus(false)}
-        isOpen={stakersModalStatus}
-        isCentered
-        scrollBehavior='inside'
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Stakers</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {stakers &&
-              stakers.map((item, index) => {
-                return (
-                  <div className='stakers-container' key={index}>
-                    <p>{item.address}</p>
-                    <p>{item.amount}</p>
-                  </div>
-                );
-              })}
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              onClick={() => {
-                setStakersModalStatus(false);
-              }}
-            >
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <StakersModal
+        stakersModalStatus={stakersModalStatus}
+        setStakersModalStatus={setStakersModalStatus}
+        stakers={stakers}
+      />
     </div>
   );
 };
